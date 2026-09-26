@@ -8,7 +8,7 @@ load_dotenv()
 class Settings(BaseSettings):
     # Set default values so Pylance doesn't flag missing constructor arguments
     GROQ_API_KEY: str = ""
-    DATABASE_URL: str = "sqlite:///./tok.db"
+    DATABASE_URL: str = "postgresql://tok_user:lONDdnB9jyWqeHhsEXDnaJIbIHxFYXVW@dpg-dap6jjo0cd8s73bueq40-a.oregon-postgres.render.com/tok_db"
 
     # Modern Pydantic v2 configuration settings
     model_config = SettingsConfigDict(
