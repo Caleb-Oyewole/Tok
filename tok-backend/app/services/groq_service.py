@@ -42,7 +42,7 @@ def extract_listing_from_transcript(transcript: str) -> dict:
     """
 
     response = client.chat.completions.create(
-        model="llama-3.3-70b-versatile",
+        model="llama-3.1-8b-instant",
         messages=[
             {"role": "system", "content": "You output strictly valid JSON."},
             {"role": "user", "content": prompt}
