@@ -11,6 +11,8 @@ if not api_key:
     raise ValueError("GROQ_API_KEY environment variable is missing.")
 
 client = Groq(api_key=api_key)
+CHAT_MODEL = "openai/gpt-oss-20b"
+
 
 def transcribe_audio(file_path: str) -> str:
     """
@@ -41,16 +43,27 @@ def extract_listing_from_transcript(transcript: str) -> dict:
     }}
     """
 
-    response = client.chat.completions.create(
-        model="llama-3.1-8b-instant",
-        messages=[
-            {"role": "system", "content": "You output strictly valid JSON."},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.1
-    )
+    try:
+        response = client.chat.completions.create(
+            model=CHAT_MODEL,
+            messages=[
+                {"role": "system", "content": "You output strictly valid JSON."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.1
+        )
+    except Exception as exc:
+        raise ValueError(
+            f"Groq chat model request failed for model '{CHAT_MODEL}'. "
+            f"Check that this model is available for your Groq API key. Details: {exc}"
+        ) from exc
 
     raw_content = response.choices[0].message.content or "{}"
     content = raw_content.strip()
-    
-    return json.loads(content)
+
+    try:
+        return json.loads(content)
+    except json.JSONDecodeError as exc:
+        raise ValueError(
+            f"Groq returned invalid JSON for the listing extraction. Raw response: {raw_content}"
+        ) from exc
